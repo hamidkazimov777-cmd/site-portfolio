@@ -5,8 +5,9 @@ import Image from "next/image";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { fetchPublishedProjectBySlug } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
-import { isLocale, defaultLocale } from "@/lib/i18n/config";
+import { isLocale, defaultLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { localizeProject } from "@/lib/i18n/content";
 
 export const dynamic = "force-dynamic";
 
@@ -17,11 +18,13 @@ async function getProject(slug: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const project = await getProject(slug);
-  if (!project) return {};
+  const { slug, locale: rawLocale } = await params;
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const raw = await getProject(slug);
+  if (!raw) return {};
+  const project = localizeProject(raw, locale);
 
   const title = project.seoTitle ?? `${project.title} — Hamid Kazimov`;
   const description = project.seoDescription ?? project.tagline;
@@ -48,10 +51,11 @@ export default async function ProjectPage({
   params: Promise<{ slug: string; locale: string }>;
 }) {
   const { slug, locale: rawLocale } = await params;
-  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
+  const locale: Locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const dict = getDictionary(locale);
-  const project = await getProject(slug);
-  if (!project) notFound();
+  const raw = await getProject(slug);
+  if (!raw) notFound();
+  const project = localizeProject(raw, locale);
 
   const SECTIONS: {
     key: "story" | "problem" | "solution" | "architecture" | "results";

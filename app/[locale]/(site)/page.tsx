@@ -3,6 +3,7 @@ import { fetchPublishedProjects, fetchSkills, fetchExperience } from "@/lib/data
 import { getSiteSettings } from "@/lib/settings";
 import { isLocale, defaultLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { localizeProject, localizeExperience, localizeSettings } from "@/lib/i18n/content";
 import { Hero } from "@/components/sections/hero";
 import { Products } from "@/components/sections/products";
 import { HowIBuild } from "@/components/sections/how-i-build";
@@ -40,12 +41,16 @@ export default async function HomePage({
   const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
   const dict = getDictionary(locale);
 
-  const [settings, projects, skills, experience] = await Promise.all([
+  const [rawSettings, rawProjects, skills, rawExperience] = await Promise.all([
     getSiteSettings(),
     fetchPublishedProjects(),
     fetchSkills(),
     fetchExperience(),
   ]);
+
+  const settings = localizeSettings(rawSettings, locale);
+  const projects = rawProjects.map((p) => localizeProject(p, locale));
+  const experience = rawExperience.map((e) => localizeExperience(e, locale));
 
   return (
     <>
