@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hamid_portfolio_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hamid
+      POSTGRES_PASSWORD: hamid_local_dev
+      POSTGRES_DB: hamid_portfolio
+    ports:
+      - "5432:5432"
+    volumes:
+      - hamid_portfolio_pgdata:/var/lib/postgresql/data
+
+volumes:
+  hamid_portfolio_pgdata:

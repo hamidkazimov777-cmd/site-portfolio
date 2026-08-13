@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// The single admin user, authenticated exclusively via Telegram Login.
+model User {
+  id         String   @id @default(cuid())
+  telegramId String   @unique
+  username   String?
+  firstName  String?
+  lastName   String?
+  photoUrl   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Project {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  title         String
+  tagline       String
+  category      String
+  status        ProjectStatus @default(DRAFT)
+  order         Int           @default(0)
+
+  coverImageUrl String?
+
+  // Hero
+  heroHeadline    String?
+  heroSubheadline String?
+
+  // Story sections
+  story        String?
+  problem      String?
+  solution     String?
+  architecture String?
+  results      String?
+
+  technologies String[] @default([])
+  links        Json?
+
+  seoTitle       String?
+  seoDescription String?
+  ogImageUrl     String?
+
+  images ProjectImage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, order])
+  @@map("projects")
+}
+
+model ProjectImage {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String   @default("")
+  caption   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([projectId, order])
+  @@map("project_images")
+}
+
+enum SkillCategory {
+  PRODUCT
+  AI
+  DEVELOPMENT
+  DESIGN
+}
+
+model Skill {
+  id        String        @id @default(cuid())
+  category  SkillCategory
+  name      String
+  order     Int           @default(0)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([category, order])
+  @@map("skills")
+}
+
+model Experience {
+  id          String    @id @default(cuid())
+  role        String
+  company     String?
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean   @default(false)
+  description String?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([order])
+  @@map("experience")
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read, createdAt])
+  @@map("contacts")
+}
+
+/// Singleton row (id = "singleton") holding editable site-wide content.
+model SiteSettings {
+  id String @id @default("singleton")
+
+  // About
+  fullName    String  @default("Hamid Kazimov")
+  role        String  @default("Founder & AI Product Builder")
+  tagline     String  @default("I build real products with AI — from strategy and design to launch.")
+  aboutBody   String?
+  avatarUrl   String?
+
+  // Contacts
+  email       String?
+  phonePrimary   String?
+  phoneSecondary String?
+  linkedinUrl String?
+  githubUrl   String?
+  websiteUrl  String?
+
+  // SEO / Schema.org defaults
+  seoTitle       String?
+  seoDescription String?
+  ogImageUrl     String?
+  twitterHandle  String?
+  schemaJsonLd   Json?
+
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
