@@ -50,7 +50,7 @@ skills-lock.json
 *.tsbuildinfo
 next-env.d.ts
 
-/app/generated/prisma
+/lib/generated/prisma
 
 # local uploads (dev fallback storage; production uses R2)
 /public/uploads

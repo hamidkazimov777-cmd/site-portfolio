@@ -4,9 +4,23 @@ import { authConfig } from "@/lib/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
+function isLocalRequest(req: Request): boolean {
+  const host = req.headers.get("host") ?? "";
+  const hostname = host.split(":")[0];
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+}
+
 export default auth((req) => {
-  const isLoggedIn = !!req.auth;
   const { pathname } = req.nextUrl;
+
+  // The admin panel is local-only: on any deployed (non-localhost) host, the
+  // control panel and its API simply don't exist. This keeps the admin — and
+  // its Node/Prisma runtime — off the public Cloudflare deployment entirely.
+  if (!isLocalRequest(req)) {
+    return new NextResponse(null, { status: 404 });
+  }
+
+  const isLoggedIn = !!req.auth;
   const isLoginPage = pathname === "/control/login";
   const isAdminApi = pathname.startsWith("/api/admin");
 

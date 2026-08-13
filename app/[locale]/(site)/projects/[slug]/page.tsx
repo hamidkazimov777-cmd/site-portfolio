@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { prisma } from "@/lib/db";
+import { fetchPublishedProjectBySlug } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
 import { isLocale, defaultLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -11,10 +11,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 export const dynamic = "force-dynamic";
 
 async function getProject(slug: string) {
-  return prisma.project.findFirst({
-    where: { slug, status: "PUBLISHED" },
-    include: { images: { orderBy: { order: "asc" } } },
-  });
+  return fetchPublishedProjectBySlug(slug);
 }
 
 export async function generateMetadata({

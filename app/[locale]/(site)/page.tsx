@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/db";
+import { fetchPublishedProjects, fetchSkills, fetchExperience } from "@/lib/data";
 import { getSiteSettings } from "@/lib/settings";
 import { isLocale, defaultLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -42,12 +42,9 @@ export default async function HomePage({
 
   const [settings, projects, skills, experience] = await Promise.all([
     getSiteSettings(),
-    prisma.project.findMany({
-      where: { status: "PUBLISHED" },
-      orderBy: { order: "asc" },
-    }),
-    prisma.skill.findMany({ orderBy: [{ category: "asc" }, { order: "asc" }] }),
-    prisma.experience.findMany({ orderBy: { order: "asc" } }),
+    fetchPublishedProjects(),
+    fetchSkills(),
+    fetchExperience(),
   ]);
 
   return (

@@ -16,8 +16,6 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";

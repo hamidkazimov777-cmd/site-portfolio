@@ -6,12 +6,9 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 /**
- * Cloudflare Workers/Pages has no TCP sockets, so a standard node-postgres
- * connection cannot be used there. When DATABASE_URL points at Neon (the
- * Cloudflare-compatible Postgres this project is designed to deploy against),
- * Prisma is wired to Neon's HTTP/WebSocket driver adapter instead. Locally,
- * against a regular Postgres instance, Prisma falls back to its default
- * TCP connection.
+ * Cloudflare Workers have no raw TCP sockets, so when DATABASE_URL points at
+ * Neon, Prisma talks to Postgres through Neon's HTTP/WebSocket driver adapter.
+ * Against any other Postgres, it falls back to the default TCP connection.
  */
 function createPrismaClient() {
   const connectionString = process.env.DATABASE_URL ?? "";

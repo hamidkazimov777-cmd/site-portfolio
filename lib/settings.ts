@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { fetchSettings } from "@/lib/data";
 import type { SiteSettings } from "@prisma/client";
 
 const FALLBACK_SETTINGS: SiteSettings = {
@@ -25,9 +25,7 @@ const FALLBACK_SETTINGS: SiteSettings = {
 
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
-    const settings = await prisma.siteSettings.findUnique({
-      where: { id: "singleton" },
-    });
+    const settings = await fetchSettings();
     return settings ?? FALLBACK_SETTINGS;
   } catch {
     return FALLBACK_SETTINGS;
