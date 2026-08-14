@@ -133,17 +133,6 @@ export default async function ProjectPage({
         </div>
       </section>
 
-      {SECTIONS.filter((s) => project[s.key]).map((section) => (
-        <section key={section.key} className="border-b border-border py-16">
-          <div className="container-page grid gap-8 md:grid-cols-[200px_1fr]">
-            <p className="font-mono text-sm text-accent">{section.label}</p>
-            <p className="max-w-2xl text-balance leading-relaxed text-muted-foreground">
-              {project[section.key] as string}
-            </p>
-          </div>
-        </section>
-      ))}
-
       {project.images.length > 0 && (
         <section className="border-b border-border py-16">
           <div className="container-page">
@@ -172,6 +161,17 @@ export default async function ProjectPage({
           </div>
         </section>
       )}
+
+      {SECTIONS.filter((s) => project[s.key]).map((section) => (
+        <section key={section.key} className="border-b border-border py-16">
+          <div className="container-page grid gap-8 md:grid-cols-[200px_1fr]">
+            <p className="font-mono text-sm text-accent">{section.label}</p>
+            <p className="max-w-2xl text-balance leading-relaxed text-muted-foreground">
+              {project[section.key] as string}
+            </p>
+          </div>
+        </section>
+      ))}
 
       {project.technologies.length > 0 && (
         <section className="py-16">

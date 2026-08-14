@@ -305,11 +305,6 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
           <Label>SEO описание</Label>
           <Textarea value={values.seoDescription ?? ""} onChange={(e) => set("seoDescription", e.target.value)} />
         </div>
-        <ImageUploadField
-          label="Open Graph изображение"
-          value={values.ogImageUrl}
-          onChange={(url) => set("ogImageUrl", url)}
-        />
       </section>
 
       <div className="sticky bottom-0 -mx-8 border-t border-border bg-background/95 px-8 py-4 backdrop-blur">
