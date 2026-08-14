@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { getSiteSettings } from "@/lib/settings";
 import { Toaster } from "sonner";
+import { AdminShortcut } from "@/components/AdminShortcut";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -87,6 +88,7 @@ export default async function RootLayout({
         />
         {children}
         <Toaster theme="dark" position="bottom-right" richColors />
+        <AdminShortcut />
       </body>
     </html>
   );

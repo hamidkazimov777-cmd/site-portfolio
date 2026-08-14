@@ -1,14 +1,13 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/db";
+import { fetchPublishedProjects } from "@/lib/data";
 import { locales } from "@/lib/i18n/config";
+
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-  const projects = await prisma.project.findMany({
-    where: { status: "PUBLISHED" },
-    select: { slug: true, updatedAt: true },
-  });
+  const projects = await fetchPublishedProjects();
 
   const entries: MetadataRoute.Sitemap = [];
 

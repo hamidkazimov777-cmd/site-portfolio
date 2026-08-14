@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { fetchProjectById, createProjectImage } from "@/lib/data";
 import { projectImageCreateSchema } from "@/lib/validations/admin";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(
   request: Request,
@@ -17,14 +19,11 @@ export async function POST(
     );
   }
 
-  const project = await prisma.project.findUnique({ where: { id } });
+  const project = await fetchProjectById(id);
   if (!project) {
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
-  const image = await prisma.projectImage.create({
-    data: { ...parsed.data, projectId: id },
-  });
-
+  const image = await createProjectImage(id, parsed.data);
   return NextResponse.json(image, { status: 201 });
 }

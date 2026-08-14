@@ -8,7 +8,7 @@ A personal portfolio + content platform for Hamid Kazimov, built with
 **Next.js 15 (App Router)**, deployed to **Cloudflare Workers**, backed by a
 **Neon (serverless Postgres)** database. Public site is trilingual
 (**EN / RU / ES**). Content is managed through a password-protected admin panel
-that runs **locally**.
+that is available directly on the **live site**.
 
 ## Live URLs
 
@@ -28,10 +28,9 @@ exist in the Workers runtime. This shaped the whole architecture:
   driver** (`@neondatabase/serverless`), not Prisma. All those queries live in
   [`lib/data.ts`](lib/data.ts). No Prisma is imported into the deployed bundle
   on the public paths.
-- **Admin panel** still uses **Prisma** (via [`lib/db.ts`](lib/db.ts)) and
-  therefore only runs **locally**. On the deployed site, `middleware.ts` returns
-  404 for `/control` and `/api/admin/*` on any non-localhost host, so the admin
-  (and Prisma) never load in production.
+- **Admin panel** uses **Prisma Edge** (via [`lib/db.ts`](lib/db.ts) and `@prisma/adapter-neon`)
+  and runs fully on the **live site** (Cloudflare Workers).
+  It is protected by Auth.js and requires a password to access.
 - **Prisma is still used** for schema, migrations and seeding — all run locally
   in Node, where it works fine.
 
@@ -41,8 +40,8 @@ public path is importing Prisma again. Route it through `lib/data.ts` instead.
 ## Architecture at a glance
 
 ```
-Public site (Cloudflare Workers)  ──HTTP──►  Neon Postgres  ◄──Prisma──  Local admin (your Mac)
-   reads via lib/data.ts                                                   writes via Prisma
+Public site (Cloudflare Workers)  ──HTTP──►  Neon Postgres  ◄──Prisma Edge──  Admin panel (Live site)
+   reads via lib/data.ts                                                   writes via Prisma Edge
 ```
 
 Content you edit locally lands in Neon and shows on the live site immediately —
@@ -99,8 +98,9 @@ npm run db:seed        # seed English content
 
 ## Admin panel (content management)
 
-- Runs **locally only**: start `npm run dev`, open **http://localhost:3000/control**
-- Login is **password-based**. The password is in `.env` as `ADMIN_PASSWORD`.
+- Access the admin panel on the live site by pressing **Command + Shift + M** (or **Ctrl + Shift + M**), or by navigating to `/control/login`.
+- Login is **password-based**. The password is in `.env` as `ADMIN_PASSWORD`, and must also be set as a Cloudflare Worker secret (`wrangler secret put ADMIN_PASSWORD`) for the live admin to accept it.
+- The whole admin panel (dashboard, all CRUD, settings) runs on the live site via the **Neon HTTP driver** in `lib/data.ts` — no Prisma at runtime. Writes hit Neon directly and show on the public site immediately.
 - Sections: Dashboard, Projects (create/edit/publish, gallery, tech, links),
   Skills, Experience, About, Contacts, SEO, Messages (contact-form inbox).
 - Saves write to Neon and appear on the live site immediately.
@@ -170,8 +170,6 @@ See [`.env.example`](.env.example) for the full list. Key ones:
   Cloudflare account's workers.dev subdomain. To get a clean URL: change the
   account subdomain in the Cloudflare dashboard, move to Cloudflare Pages
   (`*.pages.dev`), or attach a custom domain.
-- **Admin is local-only.** Making it work on the live site would require porting
-  all `/api/admin/*` routes off Prisma onto the Neon HTTP driver.
 - **RU/ES content lives in `content.ts`**, not the DB (see Translations above).
 - **Image uploads** need R2 configured to work on the deployed site.
 

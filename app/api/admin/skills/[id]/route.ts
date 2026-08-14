@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { updateSkill, deleteSkill } from "@/lib/data";
 import { skillUpdateSchema } from "@/lib/validations/admin";
+
+export const dynamic = "force-dynamic";
 
 export async function PATCH(
   request: Request,
@@ -17,7 +19,7 @@ export async function PATCH(
     );
   }
 
-  const skill = await prisma.skill.update({ where: { id }, data: parsed.data });
+  const skill = await updateSkill(id, parsed.data);
   return NextResponse.json(skill);
 }
 
@@ -26,6 +28,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  await prisma.skill.delete({ where: { id } });
+  await deleteSkill(id);
   return NextResponse.json({ ok: true });
 }

@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { fetchAllExperience, createExperience } from "@/lib/data";
 import { experienceCreateSchema } from "@/lib/validations/admin";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const experience = await prisma.experience.findMany({ orderBy: { order: "asc" } });
+  const experience = await fetchAllExperience();
   return NextResponse.json(experience);
 }
 
@@ -18,6 +20,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const experience = await prisma.experience.create({ data: parsed.data });
+  const experience = await createExperience(parsed.data);
   return NextResponse.json(experience, { status: 201 });
 }

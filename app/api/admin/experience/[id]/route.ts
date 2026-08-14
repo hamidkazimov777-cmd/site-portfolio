@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { updateExperience, deleteExperience } from "@/lib/data";
 import { experienceUpdateSchema } from "@/lib/validations/admin";
+
+export const dynamic = "force-dynamic";
 
 export async function PATCH(
   request: Request,
@@ -17,10 +19,7 @@ export async function PATCH(
     );
   }
 
-  const experience = await prisma.experience.update({
-    where: { id },
-    data: parsed.data,
-  });
+  const experience = await updateExperience(id, parsed.data);
   return NextResponse.json(experience);
 }
 
@@ -29,6 +28,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  await prisma.experience.delete({ where: { id } });
+  await deleteExperience(id);
   return NextResponse.json({ ok: true });
 }

@@ -1,15 +1,20 @@
-import { timingSafeEqual } from "crypto";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { authConfig } from "@/lib/auth.config";
 
+/**
+ * Constant-time-ish string comparison in pure JS. Avoids node:crypto's
+ * timingSafeEqual, which is not implemented in the Cloudflare Workers runtime.
+ */
 function passwordMatches(input: string): boolean {
   const expected = process.env.ADMIN_PASSWORD;
   if (!expected) return false;
-  const a = Buffer.from(input);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
+  if (input.length !== expected.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < expected.length; i++) {
+    mismatch |= input.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return mismatch === 0;
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({

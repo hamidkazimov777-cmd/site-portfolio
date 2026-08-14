@@ -1,33 +1,23 @@
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { getDashboardStats, fetchRecentMessages } from "@/lib/data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [projectCount, publishedCount, skillCount, experienceCount, messageCount, unreadCount] =
-    await Promise.all([
-      prisma.project.count(),
-      prisma.project.count({ where: { status: "PUBLISHED" } }),
-      prisma.skill.count(),
-      prisma.experience.count(),
-      prisma.contact.count(),
-      prisma.contact.count({ where: { read: false } }),
-    ]);
+  const [counts, recentMessages] = await Promise.all([
+    getDashboardStats(),
+    fetchRecentMessages(5),
+  ]);
 
   const stats = [
-    { label: "Projects", value: projectCount, href: "/control/projects" },
-    { label: "Published", value: publishedCount, href: "/control/projects" },
-    { label: "Skills", value: skillCount, href: "/control/skills" },
-    { label: "Experience entries", value: experienceCount, href: "/control/experience" },
-    { label: "Messages", value: messageCount, href: "/control/messages" },
-    { label: "Unread messages", value: unreadCount, href: "/control/messages" },
+    { label: "Projects", value: counts.projectCount, href: "/control/projects" },
+    { label: "Published", value: counts.publishedCount, href: "/control/projects" },
+    { label: "Skills", value: counts.skillCount, href: "/control/skills" },
+    { label: "Experience entries", value: counts.experienceCount, href: "/control/experience" },
+    { label: "Messages", value: counts.messageCount, href: "/control/messages" },
+    { label: "Unread messages", value: counts.unreadCount, href: "/control/messages" },
   ];
-
-  const recentMessages = await prisma.contact.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 5,
-  });
 
   return (
     <div>

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { fetchAllMessages } from "@/lib/data";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const messages = await prisma.contact.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+  const messages = await fetchAllMessages();
   return NextResponse.json(messages);
 }

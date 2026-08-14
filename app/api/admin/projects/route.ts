@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { fetchAllProjects, createProject, projectSlugExists } from "@/lib/data";
 import { projectCreateSchema } from "@/lib/validations/admin";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const projects = await prisma.project.findMany({
-    orderBy: { order: "asc" },
-    include: { images: { orderBy: { order: "asc" } } },
-  });
+  const projects = await fetchAllProjects();
   return NextResponse.json(projects);
 }
 
@@ -21,22 +20,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const existing = await prisma.project.findUnique({
-    where: { slug: parsed.data.slug },
-  });
-  if (existing) {
+  if (await projectSlugExists(parsed.data.slug)) {
     return NextResponse.json(
       { error: "A project with this slug already exists" },
       { status: 409 },
     );
   }
 
-  const project = await prisma.project.create({
-    data: {
-      ...parsed.data,
-      links: parsed.data.links ?? undefined,
-    },
-  });
-
+  const project = await createProject(parsed.data);
   return NextResponse.json(project, { status: 201 });
 }

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
+import { updateMessageRead, deleteMessage } from "@/lib/data";
+
+export const dynamic = "force-dynamic";
 
 const updateSchema = z.object({ read: z.boolean() });
 
@@ -16,10 +18,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
-  const message = await prisma.contact.update({
-    where: { id },
-    data: { read: parsed.data.read },
-  });
+  const message = await updateMessageRead(id, parsed.data.read);
   return NextResponse.json(message);
 }
 
@@ -28,6 +27,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  await prisma.contact.delete({ where: { id } });
+  await deleteMessage(id);
   return NextResponse.json({ ok: true });
 }

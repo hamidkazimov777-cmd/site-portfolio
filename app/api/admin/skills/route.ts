@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { fetchAllSkills, createSkill } from "@/lib/data";
 import { skillCreateSchema } from "@/lib/validations/admin";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const skills = await prisma.skill.findMany({
-    orderBy: [{ category: "asc" }, { order: "asc" }],
-  });
+  const skills = await fetchAllSkills();
   return NextResponse.json(skills);
 }
 
@@ -20,6 +20,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const skill = await prisma.skill.create({ data: parsed.data });
+  const skill = await createSkill(parsed.data);
   return NextResponse.json(skill, { status: 201 });
 }

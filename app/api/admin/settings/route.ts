@@ -1,14 +1,11 @@
 import { NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/db";
+import { fetchSettings, upsertSettings } from "@/lib/data";
 import { settingsUpdateSchema } from "@/lib/validations/admin";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const settings = await prisma.siteSettings.upsert({
-    where: { id: "singleton" },
-    update: {},
-    create: { id: "singleton" },
-  });
+  const settings = (await fetchSettings()) ?? (await upsertSettings({}));
   return NextResponse.json(settings);
 }
 
@@ -23,20 +20,6 @@ export async function PATCH(request: Request) {
     );
   }
 
-  const data = {
-    ...parsed.data,
-    schemaJsonLd:
-      parsed.data.schemaJsonLd === undefined
-        ? undefined
-        : (parsed.data.schemaJsonLd as Prisma.InputJsonValue | null) ??
-          Prisma.JsonNull,
-  };
-
-  const settings = await prisma.siteSettings.upsert({
-    where: { id: "singleton" },
-    update: data,
-    create: { id: "singleton", ...data },
-  });
-
+  const settings = await upsertSettings(parsed.data);
   return NextResponse.json(settings);
 }
