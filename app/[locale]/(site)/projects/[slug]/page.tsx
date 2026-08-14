@@ -121,6 +121,15 @@ export default async function ProjectPage({
               ))}
             </div>
           )}
+
+          {project.coverImageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={project.coverImageUrl}
+              alt={project.title}
+              className="mt-10 w-full rounded-xl border border-border object-cover"
+            />
+          )}
         </div>
       </section>
 
