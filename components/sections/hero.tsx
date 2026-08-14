@@ -75,6 +75,14 @@ export function Hero({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
+          {settings.avatarUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={settings.avatarUrl}
+              alt={settings.fullName}
+              className="mb-6 size-20 rounded-full border border-border object-cover"
+            />
+          )}
           <p className="font-mono text-sm text-accent">{settings.role}</p>
           <h1 className="mt-4 text-balance text-4xl font-medium leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
             {settings.fullName}

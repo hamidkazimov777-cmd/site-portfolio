@@ -33,6 +33,14 @@ export function Products({
               className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border bg-card p-8 transition-colors hover:border-accent"
             >
               <div>
+                {project.coverImageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={project.coverImageUrl}
+                    alt={project.title}
+                    className="mb-6 aspect-video w-full rounded-lg border border-border object-cover"
+                  />
+                )}
                 <div className="flex items-start justify-between gap-4">
                   <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
                     {project.category}
