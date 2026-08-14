@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createMessage } from "@/lib/data";
+import { notifyNewSubmission } from "@/lib/notify";
 import { contactSchema } from "@/lib/validations/contact";
 
 export const runtime = "nodejs";
@@ -16,5 +17,7 @@ export async function POST(request: Request) {
   }
 
   const { id } = await createMessage(parsed.data);
+  // Fire notifications but never let them fail the submission.
+  await notifyNewSubmission(parsed.data).catch(() => {});
   return NextResponse.json({ id }, { status: 201 });
 }
