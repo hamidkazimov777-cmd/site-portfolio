@@ -17,8 +17,8 @@ import { GalleryEditor } from "@/components/admin/gallery-editor";
 type ProjectWithImages = Project & { images: ProjectImage[] };
 
 const STATUS_OPTIONS = [
-  { value: "DRAFT", label: "Draft" },
-  { value: "PUBLISHED", label: "Published" },
+  { value: "DRAFT", label: "Черновик" },
+  { value: "PUBLISHED", label: "Опубликован" },
 ];
 
 function slugify(input: string) {
@@ -100,11 +100,11 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error ?? "Failed to save project");
+        toast.error(data.error ?? "Не удалось сохранить проект");
         return;
       }
 
-      toast.success(isEdit ? "Project updated" : "Project created");
+      toast.success(isEdit ? "Проект обновлён" : "Проект создан");
       if (!isEdit) {
         router.push(`/control/projects/${data.id}`);
       } else {
@@ -119,7 +119,7 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
     <form onSubmit={handleSubmit} className="space-y-10 pb-16">
       <section className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <Label>Title</Label>
+          <Label>Название</Label>
           <Input
             value={values.title}
             onChange={(e) => {
@@ -130,7 +130,7 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label>Slug</Label>
+          <Label>Slug (адрес)</Label>
           <Input
             value={values.slug}
             onChange={(e) => {
@@ -141,15 +141,15 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
           />
         </div>
         <div className="flex flex-col gap-2 sm:col-span-2">
-          <Label>Tagline</Label>
+          <Label>Краткое описание</Label>
           <Input value={values.tagline} onChange={(e) => set("tagline", e.target.value)} required />
         </div>
         <div className="flex flex-col gap-2">
-          <Label>Category</Label>
+          <Label>Категория</Label>
           <Input value={values.category} onChange={(e) => set("category", e.target.value)} required />
         </div>
         <div className="flex flex-col gap-2">
-          <Label>Status</Label>
+          <Label>Статус</Label>
           <Select value={values.status} onValueChange={(v) => set("status", v as "DRAFT" | "PUBLISHED")}>
             <SelectTrigger>
               <SelectValue />
@@ -164,7 +164,7 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
           </Select>
         </div>
         <div className="flex flex-col gap-2">
-          <Label>Display order</Label>
+          <Label>Порядок отображения</Label>
           <Input
             type="number"
             value={values.order}
@@ -173,7 +173,7 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
         </div>
         <div>
           <ImageUploadField
-            label="Cover image"
+            label="Обложка"
             value={values.coverImageUrl}
             onChange={(url) => set("coverImageUrl", url)}
           />
@@ -181,13 +181,13 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
       </section>
 
       <section className="space-y-5 border-t border-border pt-8">
-        <h2 className="text-sm font-medium text-accent">Hero</h2>
+        <h2 className="text-sm font-medium text-accent">Заголовок (Hero)</h2>
         <div className="flex flex-col gap-2">
-          <Label>Hero headline</Label>
+          <Label>Заголовок</Label>
           <Input value={values.heroHeadline ?? ""} onChange={(e) => set("heroHeadline", e.target.value)} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label>Hero subheadline</Label>
+          <Label>Подзаголовок</Label>
           <Textarea
             value={values.heroSubheadline ?? ""}
             onChange={(e) => set("heroSubheadline", e.target.value)}
@@ -196,17 +196,23 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
       </section>
 
       <section className="space-y-5 border-t border-border pt-8">
-        <h2 className="text-sm font-medium text-accent">Story</h2>
-        {(["story", "problem", "solution", "architecture", "results"] as const).map((key) => (
+        <h2 className="text-sm font-medium text-accent">История</h2>
+        {([
+          ["story", "История"],
+          ["problem", "Проблема"],
+          ["solution", "Решение"],
+          ["architecture", "Архитектура"],
+          ["results", "Результаты"],
+        ] as const).map(([key, label]) => (
           <div key={key} className="flex flex-col gap-2">
-            <Label className="capitalize">{key}</Label>
+            <Label>{label}</Label>
             <Textarea rows={4} value={values[key] ?? ""} onChange={(e) => set(key, e.target.value)} />
           </div>
         ))}
       </section>
 
       <section className="space-y-3 border-t border-border pt-8">
-        <h2 className="text-sm font-medium text-accent">Technologies</h2>
+        <h2 className="text-sm font-medium text-accent">Технологии</h2>
         <div className="flex flex-wrap gap-2">
           {technologies.map((tech) => (
             <Badge key={tech} className="gap-1.5 pr-1.5">
@@ -231,7 +237,7 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
                 addTechnology();
               }
             }}
-            placeholder="Add a technology and press Enter"
+            placeholder="Введите технологию и нажмите Enter"
           />
           <Button type="button" variant="outline" onClick={addTechnology}>
             <Plus className="size-4" />
@@ -240,11 +246,11 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
       </section>
 
       <section className="space-y-3 border-t border-border pt-8">
-        <h2 className="text-sm font-medium text-accent">Links</h2>
+        <h2 className="text-sm font-medium text-accent">Ссылки</h2>
         {links.map((link, i) => (
           <div key={i} className="flex gap-2">
             <Input
-              placeholder="Label (e.g. Website)"
+              placeholder="Название (например, Website)"
               value={link.label}
               onChange={(e) => {
                 const next = [...links];
@@ -278,13 +284,13 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
           onClick={() => setLinks([...links, { label: "", href: "" }])}
         >
           <Plus className="size-4" />
-          Add link
+          Добавить ссылку
         </Button>
       </section>
 
       {isEdit && project && (
         <section className="space-y-3 border-t border-border pt-8">
-          <h2 className="text-sm font-medium text-accent">Gallery</h2>
+          <h2 className="text-sm font-medium text-accent">Галерея</h2>
           <GalleryEditor projectId={project.id} images={project.images} />
         </section>
       )}
@@ -292,15 +298,15 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
       <section className="space-y-5 border-t border-border pt-8">
         <h2 className="text-sm font-medium text-accent">SEO</h2>
         <div className="flex flex-col gap-2">
-          <Label>SEO title</Label>
+          <Label>SEO заголовок</Label>
           <Input value={values.seoTitle ?? ""} onChange={(e) => set("seoTitle", e.target.value)} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label>SEO description</Label>
+          <Label>SEO описание</Label>
           <Textarea value={values.seoDescription ?? ""} onChange={(e) => set("seoDescription", e.target.value)} />
         </div>
         <ImageUploadField
-          label="Open Graph image"
+          label="Open Graph изображение"
           value={values.ogImageUrl}
           onChange={(url) => set("ogImageUrl", url)}
         />
@@ -308,7 +314,7 @@ export function ProjectForm({ project }: { project?: ProjectWithImages }) {
 
       <div className="sticky bottom-0 -mx-8 border-t border-border bg-background/95 px-8 py-4 backdrop-blur">
         <Button type="submit" disabled={saving}>
-          {saving ? "Saving…" : isEdit ? "Save changes" : "Create project"}
+          {saving ? "Сохранение…" : isEdit ? "Сохранить изменения" : "Создать проект"}
         </Button>
       </div>
     </form>

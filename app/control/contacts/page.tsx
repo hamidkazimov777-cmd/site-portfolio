@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 export default function ContactsPage() {
   const { settings, setSettings, saving, save } = useSiteSettings();
 
-  if (!settings) return <p className="text-sm text-muted-foreground">Loading…</p>;
+  if (!settings) return <p className="text-sm text-muted-foreground">Загрузка…</p>;
 
   return (
     <div>
-      <h1 className="text-2xl font-medium text-foreground">Contacts</h1>
+      <h1 className="text-2xl font-medium text-foreground">Контакты</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Contact details shown on your site and in the footer.
+        Контактные данные на сайте и в футере.
       </p>
 
       <form
@@ -40,14 +40,14 @@ export default function ContactsPage() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label>Phone (primary)</Label>
+          <Label>Телефон (основной)</Label>
           <Input
             value={settings.phonePrimary ?? ""}
             onChange={(e) => setSettings({ ...settings, phonePrimary: e.target.value })}
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label>Phone (secondary)</Label>
+          <Label>Телефон (дополнительный)</Label>
           <Input
             value={settings.phoneSecondary ?? ""}
             onChange={(e) => setSettings({ ...settings, phoneSecondary: e.target.value })}
@@ -68,14 +68,14 @@ export default function ContactsPage() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label>Website URL</Label>
+          <Label>Сайт (URL)</Label>
           <Input
             value={settings.websiteUrl ?? ""}
             onChange={(e) => setSettings({ ...settings, websiteUrl: e.target.value })}
           />
         </div>
         <Button type="submit" disabled={saving}>
-          {saving ? "Saving…" : "Save changes"}
+          {saving ? "Сохранение…" : "Сохранить изменения"}
         </Button>
       </form>
     </div>

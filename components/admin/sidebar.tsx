@@ -17,14 +17,14 @@ import {
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/control", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/control/projects", label: "Projects", icon: FolderKanban },
-  { href: "/control/skills", label: "Skills", icon: Sparkles },
-  { href: "/control/experience", label: "Experience", icon: Briefcase },
-  { href: "/control/about", label: "About", icon: User },
-  { href: "/control/contacts", label: "Contacts", icon: ContactIcon },
+  { href: "/control", label: "Дашборд", icon: LayoutDashboard, exact: true },
+  { href: "/control/projects", label: "Проекты", icon: FolderKanban },
+  { href: "/control/skills", label: "Навыки", icon: Sparkles },
+  { href: "/control/experience", label: "Опыт", icon: Briefcase },
+  { href: "/control/about", label: "Обо мне", icon: User },
+  { href: "/control/contacts", label: "Контакты", icon: ContactIcon },
   { href: "/control/seo", label: "SEO", icon: Search },
-  { href: "/control/messages", label: "Messages", icon: Mail },
+  { href: "/control/messages", label: "Сообщения", icon: Mail },
 ];
 
 export function AdminSidebar() {
@@ -36,7 +36,7 @@ export function AdminSidebar() {
         <Link href="/control" className="font-mono text-sm text-foreground">
           hamid<span className="text-accent">.</span>kazimov
         </Link>
-        <p className="mt-0.5 text-xs text-muted-foreground">Control Panel</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">Панель управления</p>
       </div>
 
       <nav className="flex-1 space-y-1 p-3">
@@ -68,7 +68,7 @@ export function AdminSidebar() {
           className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
         >
           <LogOut className="size-4" />
-          Sign out
+          Выйти
         </button>
       </div>
     </aside>

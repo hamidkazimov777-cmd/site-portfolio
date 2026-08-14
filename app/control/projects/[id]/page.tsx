@@ -17,7 +17,7 @@ export default async function EditProjectPage({
   return (
     <div>
       <h1 className="text-2xl font-medium text-foreground">{project.title}</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Editing project details.</p>
+      <p className="mt-1 text-sm text-muted-foreground">Редактирование деталей проекта.</p>
       <div className="mt-8">
         <ProjectForm project={project} />
       </div>

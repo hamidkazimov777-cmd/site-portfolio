@@ -27,9 +27,9 @@ export function useSiteSettings() {
       });
       if (res.ok) {
         setSettings(await res.json());
-        toast.success("Saved");
+        toast.success("Сохранено");
       } else {
-        toast.error("Failed to save");
+        toast.error("Не удалось сохранить");
       }
     } finally {
       setSaving(false);

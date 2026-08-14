@@ -8,6 +8,7 @@ import type {
   SiteSettings,
   Contact,
 } from "@prisma/client";
+import { translateFields, isTranslationConfigured } from "@/lib/translate";
 
 type ProjectWithImages = Project & { images: ProjectImage[] };
 
@@ -32,7 +33,7 @@ function toDate<T>(row: T, keys: (keyof T)[]): T {
 const SETTINGS_COLUMNS = `
   id, "fullName", role, tagline, "aboutBody", "avatarUrl",
   email, "phonePrimary", "phoneSecondary", "linkedinUrl", "githubUrl", "websiteUrl",
-  "seoTitle", "seoDescription", "ogImageUrl", "twitterHandle", "schemaJsonLd", "updatedAt"
+  "seoTitle", "seoDescription", "ogImageUrl", "twitterHandle", "schemaJsonLd", translations, "updatedAt"
 `;
 
 export async function fetchSettings(): Promise<SiteSettings | null> {
@@ -49,7 +50,7 @@ export async function fetchSettings(): Promise<SiteSettings | null> {
 const PROJECT_COLUMNS = `
   id, slug, title, tagline, category, status, "order", "coverImageUrl",
   "heroHeadline", "heroSubheadline", story, problem, solution, architecture, results,
-  technologies, links, "seoTitle", "seoDescription", "ogImageUrl", "createdAt", "updatedAt"
+  technologies, links, "seoTitle", "seoDescription", "ogImageUrl", translations, "createdAt", "updatedAt"
 `;
 
 const IMAGE_COLUMNS = `id, "projectId", url, alt, caption, "order", "createdAt"`;
@@ -108,7 +109,7 @@ export async function fetchSkills(): Promise<Skill[]> {
 export async function fetchExperience(): Promise<Experience[]> {
   const sql = getSql();
   const rows = (await sql.query(
-    `SELECT id, role, company, "startDate", "endDate", "isCurrent", description, "order", "createdAt", "updatedAt"
+    `SELECT id, role, company, "startDate", "endDate", "isCurrent", description, "order", translations, "createdAt", "updatedAt"
      FROM experience ORDER BY "order" ASC`,
   )) as Experience[];
   return rows.map((r) => toDate(r, ["startDate", "endDate", "createdAt", "updatedAt"]));
@@ -136,10 +137,36 @@ export async function createMessage(input: {
  * Workers as well as locally. Prisma is used only for migrations/seeding.
  * ===================================================================== */
 
-const JSON_COLUMNS = new Set(["links", "schemaJsonLd"]);
+const JSON_COLUMNS = new Set(["links", "schemaJsonLd", "translations"]);
 const ARRAY_COLUMNS = new Set(["technologies"]);
 
 type Row = Record<string, unknown>;
+
+/**
+ * Translates a record's translatable text fields to RU/ES via DeepL and
+ * persists the result in its `translations` jsonb column. Best-effort: on any
+ * failure the English record is kept and translations are simply skipped.
+ */
+async function storeTranslations(
+  table: "projects" | "experience" | "site_settings",
+  id: string,
+  fields: Record<string, string | null | undefined>,
+): Promise<Record<string, unknown> | null> {
+  if (!isTranslationConfigured()) return null;
+  try {
+    const translations = await translateFields(fields);
+    const sql = getSql();
+    await sql.query(
+      `UPDATE ${table} SET translations = $1::jsonb WHERE id = $2`,
+      [JSON.stringify(translations), id],
+    );
+    return translations;
+  } catch (error) {
+    console.error(`Translation failed for ${table} ${id}:`, error);
+    return null;
+  }
+}
+
 
 function normalizeValue(value: unknown): unknown {
   if (value instanceof Date) return value.toISOString();
@@ -317,7 +344,18 @@ export async function createProject(data: Row): Promise<Project> {
      RETURNING ${PROJECT_COLUMNS}`,
     params,
   )) as Project[];
-  return normalizeProject(rows[0]);
+  const project = normalizeProject(rows[0]);
+  const translations = await storeTranslations("projects", project.id, {
+    category: project.category,
+    tagline: project.tagline,
+    heroSubheadline: project.heroSubheadline,
+    story: project.story,
+    problem: project.problem,
+    solution: project.solution,
+    architecture: project.architecture,
+    results: project.results,
+  });
+  return { ...project, translations: (translations ?? project.translations) as Project["translations"] };
 }
 
 export async function updateProject(id: string, data: Row): Promise<Project> {
@@ -330,7 +368,20 @@ export async function updateProject(id: string, data: Row): Promise<Project> {
      RETURNING ${PROJECT_COLUMNS}`,
     params,
   )) as Project[];
-  return normalizeProject(rows[0]);
+  const project = normalizeProject(rows[0]);
+  // Regenerate translations from the full current content so all languages
+  // stay consistent, even if only one field changed.
+  const translations = await storeTranslations("projects", project.id, {
+    category: project.category,
+    tagline: project.tagline,
+    heroSubheadline: project.heroSubheadline,
+    story: project.story,
+    problem: project.problem,
+    solution: project.solution,
+    architecture: project.architecture,
+    results: project.results,
+  });
+  return { ...project, translations: (translations ?? project.translations) as Project["translations"] };
 }
 
 export async function deleteProject(id: string): Promise<void> {
@@ -425,7 +476,7 @@ export async function fetchAllExperience(): Promise<Experience[]> {
   return fetchExperience();
 }
 
-const EXPERIENCE_COLUMNS = `id, role, company, "startDate", "endDate", "isCurrent", description, "order", "createdAt", "updatedAt"`;
+const EXPERIENCE_COLUMNS = `id, role, company, "startDate", "endDate", "isCurrent", description, "order", translations, "createdAt", "updatedAt"`;
 
 export async function createExperience(data: Row): Promise<Experience> {
   const sql = getSql();
@@ -445,7 +496,12 @@ export async function createExperience(data: Row): Promise<Experience> {
       data.order ?? 0,
     ],
   )) as Experience[];
-  return toDate(rows[0], ["startDate", "endDate", "createdAt", "updatedAt"]);
+  const exp = toDate(rows[0], ["startDate", "endDate", "createdAt", "updatedAt"]);
+  const translations = await storeTranslations("experience", exp.id, {
+    role: exp.role,
+    description: exp.description,
+  });
+  return { ...exp, translations: (translations ?? exp.translations) as Experience["translations"] };
 }
 
 export async function updateExperience(id: string, data: Row): Promise<Experience> {
@@ -458,7 +514,12 @@ export async function updateExperience(id: string, data: Row): Promise<Experienc
      RETURNING ${EXPERIENCE_COLUMNS}`,
     params,
   )) as Experience[];
-  return toDate(rows[0], ["startDate", "endDate", "createdAt", "updatedAt"]);
+  const exp = toDate(rows[0], ["startDate", "endDate", "createdAt", "updatedAt"]);
+  const translations = await storeTranslations("experience", exp.id, {
+    role: exp.role,
+    description: exp.description,
+  });
+  return { ...exp, translations: (translations ?? exp.translations) as Experience["translations"] };
 }
 
 export async function deleteExperience(id: string): Promise<void> {
@@ -490,7 +551,20 @@ export async function upsertSettings(data: Row): Promise<SiteSettings> {
      RETURNING ${SETTINGS_COLUMNS}`,
     params,
   )) as SiteSettings[];
-  return toDate(rows[0], ["updatedAt"]);
+  const settings = toDate(rows[0], ["updatedAt"]);
+  // Only re-translate when a translatable field was part of the update.
+  const touched = ["role", "tagline", "aboutBody"].some(
+    (k) => k in data,
+  );
+  if (touched) {
+    const translations = await storeTranslations("site_settings", "singleton", {
+      role: settings.role,
+      tagline: settings.tagline,
+      aboutBody: settings.aboutBody,
+    });
+    if (translations) return { ...settings, translations: translations as SiteSettings["translations"] };
+  }
+  return settings;
 }
 
 // --------------------------------------------------------------- Messages (admin)

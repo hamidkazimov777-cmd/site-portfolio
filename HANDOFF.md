@@ -105,25 +105,36 @@ npm run db:seed        # seed English content
   Skills, Experience, About, Contacts, SEO, Messages (contact-form inbox).
 - Saves write to Neon and appear on the live site immediately.
 
-## Translations — important
+## Translations — how it works now
 
-There are **two** layers of translation:
+Content is authored in **Russian** in the admin panel. **Russian is the source
+language** (stored in the base DB columns). On every save, the translatable
+text fields are auto-translated to **English and Spanish** via the **DeepL API**
+and stored in each record's `translations` jsonb column as `{ en: {...},
+es: {...} }`.
 
-1. **UI copy** (nav, section headers, buttons, form labels) →
-   [`lib/i18n/dictionaries.ts`](lib/i18n/dictionaries.ts).
-2. **Content** (project descriptions, experience, hero role/tagline, and the
-   Russian name "Гамид Кязымов") → [`lib/i18n/content.ts`](lib/i18n/content.ts),
-   keyed by project slug / experience role. English is the source of truth in
-   the DB; RU and ES are overlays applied at render time.
+- **UI copy** (nav, section labels, buttons) → [`lib/i18n/dictionaries.ts`](lib/i18n/dictionaries.ts).
+- **Content localization** → [`lib/i18n/content.ts`](lib/i18n/content.ts):
+  `ru` uses base columns; `en`/`es` use `translations[locale]`, falling back to
+  base. The DeepL wrapper is [`lib/translate.ts`](lib/translate.ts); the
+  translate-on-save logic lives in `lib/data.ts` (`storeTranslations`).
 
-**Consequence:** editing a project's text in the admin panel changes the
-**English** version only. The RU/ES translations are hardcoded in
-`content.ts`. If you edit content in admin, update the matching RU/ES strings in
-`content.ts` and redeploy, or the other languages will drift. (A future
-improvement would be per-locale fields in the DB + admin UI.)
+So: **edit in Russian → save → English and Spanish appear on the site
+automatically.** No code changes or redeploys needed for content.
 
-Product names (Convertra, ForzaDJ…) and technologies (Swift, React…) are
-intentionally left untranslated.
+- Requires `DEEPL_API_KEY` in `.env` and as a Cloudflare secret. Free tier
+  (~500k chars/month) is plenty.
+- The display name "Гамид Кязымов" (RU) / "Hamid Kazimov" (EN/ES) is fixed in
+  `content.ts` (`LATIN_NAME`), never machine-translated.
+- Product names and technologies are entered once and not translated.
+- The admin UI itself is in Russian.
+
+## Images
+
+Uploaded images (cover, gallery, OG, avatar) are stored **inline as base64
+`data:` URLs** directly in the database — no filesystem, no object storage, no
+external setup. Works on Cloudflare Workers and locally. See
+[`lib/storage.ts`](lib/storage.ts). Max 2MB per image to keep rows/pages light.
 
 ## Deploying
 

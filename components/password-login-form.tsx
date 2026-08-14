@@ -24,7 +24,7 @@ export function PasswordLoginForm() {
       router.push("/control");
       router.refresh();
     } else {
-      setError("Incorrect password.");
+      setError("Неверный пароль.");
       setPending(false);
     }
   }
@@ -34,13 +34,13 @@ export function PasswordLoginForm() {
       <Input
         type="password"
         autoFocus
-        placeholder="Password"
+        placeholder="Пароль"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
       {error && <p className="text-sm text-red-400">{error}</p>}
       <Button type="submit" disabled={pending || !password}>
-        {pending ? <Loader2 className="size-4 animate-spin" /> : "Sign in"}
+        {pending ? <Loader2 className="size-4 animate-spin" /> : "Войти"}
       </Button>
     </form>
   );

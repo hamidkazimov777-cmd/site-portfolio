@@ -30,7 +30,7 @@ export function GalleryEditor({
       });
       const uploadData = await uploadRes.json();
       if (!uploadRes.ok) {
-        toast.error(uploadData.error ?? "Upload failed");
+        toast.error(uploadData.error ?? "Не удалось загрузить");
         return;
       }
 
@@ -43,7 +43,7 @@ export function GalleryEditor({
       if (res.ok) {
         setImages([...images, image]);
       } else {
-        toast.error("Failed to save image");
+        toast.error("Не удалось сохранить изображение");
       }
     } finally {
       setUploading(false);
@@ -60,9 +60,9 @@ export function GalleryEditor({
     });
     if (res.ok) {
       setImages((prev) => prev.filter((img) => img.id !== imageId));
-      toast.success("Image removed");
+      toast.success("Изображение удалено");
     } else {
-      toast.error("Failed to remove image");
+      toast.error("Не удалось удалить изображение");
     }
   }
 
@@ -76,7 +76,7 @@ export function GalleryEditor({
             </div>
             <div className="space-y-2 p-2">
               <Input
-                placeholder="Alt text"
+                placeholder="Alt-текст"
                 defaultValue={image.alt}
                 onBlur={(e) => updateAlt(image.id, e.target.value)}
                 className="h-8 text-xs"
@@ -89,7 +89,7 @@ export function GalleryEditor({
                 onClick={() => removeImage(image.id)}
               >
                 <Trash2 className="size-3.5" />
-                Remove
+                Удалить
               </Button>
             </div>
           </div>
@@ -102,7 +102,7 @@ export function GalleryEditor({
           className="flex aspect-video flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border text-muted-foreground transition-colors hover:border-accent hover:text-accent"
         >
           {uploading ? <Loader2 className="size-5 animate-spin" /> : <Upload className="size-5" />}
-          <span className="text-xs">Add image</span>
+          <span className="text-xs">Добавить фото</span>
         </button>
         <input
           ref={inputRef}

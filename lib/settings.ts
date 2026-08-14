@@ -20,6 +20,7 @@ const FALLBACK_SETTINGS: SiteSettings = {
   ogImageUrl: null,
   twitterHandle: null,
   schemaJsonLd: null,
+  translations: null,
   updatedAt: new Date(),
 };
 

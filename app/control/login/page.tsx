@@ -1,7 +1,7 @@
 import { PasswordLoginForm } from "@/components/password-login-form";
 
 export const metadata = {
-  title: "Sign in",
+  title: "Вход",
   robots: { index: false, follow: false },
 };
 
@@ -13,10 +13,10 @@ export default function ControlLoginPage() {
           /control
         </p>
         <h1 className="mt-3 text-center text-2xl font-medium text-foreground">
-          Admin sign in
+          Вход в админку
         </h1>
         <p className="mt-2 text-center text-sm text-muted-foreground">
-          Enter the admin password to manage your site.
+          Введите пароль администратора для управления сайтом.
         </p>
         <div className="mt-8">
           <PasswordLoginForm />

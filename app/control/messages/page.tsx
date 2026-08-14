@@ -35,14 +35,14 @@ export default function MessagesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-medium text-foreground">Messages</h1>
+      <h1 className="text-2xl font-medium text-foreground">Сообщения</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Submissions from your contact form.
+        Заявки из формы обратной связи.
       </p>
 
       <div className="mt-8 space-y-3">
         {messages?.length === 0 && (
-          <p className="text-sm text-muted-foreground">No messages yet.</p>
+          <p className="text-sm text-muted-foreground">Пока нет сообщений.</p>
         )}
         {messages?.map((message) => (
           <Card key={message.id} className={message.read ? "opacity-70" : undefined}>

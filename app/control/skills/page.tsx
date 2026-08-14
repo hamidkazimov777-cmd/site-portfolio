@@ -10,10 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
 const CATEGORIES: { value: SkillCategory; label: string }[] = [
-  { value: "PRODUCT", label: "Product" },
+  { value: "PRODUCT", label: "Продукт" },
   { value: "AI", label: "AI" },
-  { value: "DEVELOPMENT", label: "Development" },
-  { value: "DESIGN", label: "Design" },
+  { value: "DEVELOPMENT", label: "Разработка" },
+  { value: "DESIGN", label: "Дизайн" },
 ];
 
 export default function SkillsPage() {
@@ -50,7 +50,7 @@ export default function SkillsPage() {
       setSkills((prev) => [...(prev ?? []), skill]);
       setInputs((prev) => ({ ...prev, [category]: "" }));
     } else {
-      toast.error("Failed to add skill");
+      toast.error("Не удалось добавить навык");
     }
   }
 
@@ -58,16 +58,16 @@ export default function SkillsPage() {
     setSkills((prev) => prev?.filter((s) => s.id !== id) ?? null);
     const res = await fetch(`/api/admin/skills/${id}`, { method: "DELETE" });
     if (!res.ok) {
-      toast.error("Failed to remove skill");
+      toast.error("Не удалось удалить навык");
       load();
     }
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-medium text-foreground">Skills</h1>
+      <h1 className="text-2xl font-medium text-foreground">Навыки</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Manage the capability tags shown on your homepage.
+        Управление тегами навыков на главной странице.
       </p>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as SkillCategory)} className="mt-8">
@@ -98,7 +98,7 @@ export default function SkillsPage() {
             </div>
             <div className="mt-4 flex max-w-sm gap-2">
               <Input
-                placeholder={`Add a ${c.label.toLowerCase()} skill`}
+                placeholder={`Добавить навык: ${c.label.toLowerCase()}`}
                 value={inputs[c.value]}
                 onChange={(e) => setInputs((prev) => ({ ...prev, [c.value]: e.target.value }))}
                 onKeyDown={(e) => {

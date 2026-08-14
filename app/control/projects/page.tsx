@@ -45,10 +45,10 @@ export default function ProjectsListPage() {
     });
 
     if (!res.ok) {
-      toast.error("Failed to update status");
+      toast.error("Не удалось обновить статус");
       load();
     } else {
-      toast.success(nextStatus === "PUBLISHED" ? "Published" : "Moved to draft");
+      toast.success(nextStatus === "PUBLISHED" ? "Опубликовано" : "В черновик");
     }
   }
 
@@ -59,9 +59,9 @@ export default function ProjectsListPage() {
     });
     if (res.ok) {
       setProjects((prev) => prev?.filter((p) => p.id !== deleteTarget.id) ?? null);
-      toast.success("Project deleted");
+      toast.success("Проект удалён");
     } else {
-      toast.error("Failed to delete project");
+      toast.error("Не удалось удалить проект");
     }
     setDeleteTarget(null);
   }
@@ -70,26 +70,26 @@ export default function ProjectsListPage() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-medium text-foreground">Projects</h1>
+          <h1 className="text-2xl font-medium text-foreground">Проекты</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Create, edit and publish your product case studies.
+            Создавайте, редактируйте и публикуйте кейсы ваших продуктов.
           </p>
         </div>
         <Button asChild>
           <Link href="/control/projects/new">
             <Plus className="size-4" />
-            New project
+            Новый проект
           </Link>
         </Button>
       </div>
 
       <div className="mt-8 space-y-3">
         {projects === null && (
-          <p className="text-sm text-muted-foreground">Loading…</p>
+          <p className="text-sm text-muted-foreground">Загрузка…</p>
         )}
         {projects?.length === 0 && (
           <p className="text-sm text-muted-foreground">
-            No projects yet. Create your first one.
+            Пока нет проектов. Создайте первый.
           </p>
         )}
         {projects?.map((project) => (
@@ -118,13 +118,13 @@ export default function ProjectsListPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground transition-colors hover:text-accent"
-                  title="View live"
+                  title="Открыть на сайте"
                 >
                   <ExternalLink className="size-4" />
                 </a>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">
-                    {project.status === "PUBLISHED" ? "Published" : "Draft"}
+                    {project.status === "PUBLISHED" ? "Опубликован" : "Черновик"}
                   </span>
                   <Switch
                     checked={project.status === "PUBLISHED"}
@@ -134,7 +134,7 @@ export default function ProjectsListPage() {
                 <button
                   onClick={() => setDeleteTarget(project)}
                   className="text-muted-foreground transition-colors hover:text-red-400"
-                  title="Delete"
+                  title="Удалить"
                 >
                   <Trash2 className="size-4" />
                 </button>
@@ -147,18 +147,18 @@ export default function ProjectsListPage() {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete project</DialogTitle>
+            <DialogTitle>Удалить проект</DialogTitle>
             <DialogDescription>
-              This will permanently delete &ldquo;{deleteTarget?.title}&rdquo; and its
-              images. This cannot be undone.
+              Проект &ldquo;{deleteTarget?.title}&rdquo; и все его изображения будут
+              удалены безвозвратно.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>
-              Cancel
+              Отмена
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
-              Delete
+              Удалить
             </Button>
           </DialogFooter>
         </DialogContent>

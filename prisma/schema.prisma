@@ -57,6 +57,9 @@ model Project {
   seoDescription String?
   ogImageUrl     String?
 
+  /// Auto-generated RU/ES translations: { ru: {...fields}, es: {...fields} }
+  translations Json?
+
   images ProjectImage[]
 
   createdAt DateTime @default(now())
@@ -108,6 +111,10 @@ model Experience {
   isCurrent   Boolean   @default(false)
   description String?
   order       Int       @default(0)
+
+  /// Auto-generated RU/ES translations: { ru: {...fields}, es: {...fields} }
+  translations Json?
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -152,6 +159,9 @@ model SiteSettings {
   ogImageUrl     String?
   twitterHandle  String?
   schemaJsonLd   Json?
+
+  /// Auto-generated RU/ES translations for role/tagline/aboutBody.
+  translations Json?
 
   updatedAt DateTime @updatedAt
 

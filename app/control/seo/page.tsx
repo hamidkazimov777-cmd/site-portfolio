@@ -14,7 +14,7 @@ export default function SeoPage() {
   const [schemaText, setSchemaText] = useState<string | null>(null);
   const [schemaError, setSchemaError] = useState<string | null>(null);
 
-  if (!settings) return <p className="text-sm text-muted-foreground">Loading…</p>;
+  if (!settings) return <p className="text-sm text-muted-foreground">Загрузка…</p>;
 
   const currentSchemaText =
     schemaText ??
@@ -24,7 +24,7 @@ export default function SeoPage() {
     <div>
       <h1 className="text-2xl font-medium text-foreground">SEO</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Metadata used for search engines and social sharing.
+        Метаданные для поисковиков и соцсетей.
       </p>
 
       <form
@@ -36,7 +36,7 @@ export default function SeoPage() {
               schemaJsonLd = schemaText.trim() ? JSON.parse(schemaText) : null;
               setSchemaError(null);
             } catch {
-              setSchemaError("Invalid JSON");
+              setSchemaError("Некорректный JSON");
               return;
             }
           }
@@ -51,26 +51,26 @@ export default function SeoPage() {
         className="mt-8 max-w-xl space-y-6"
       >
         <div className="flex flex-col gap-2">
-          <Label>SEO title</Label>
+          <Label>SEO заголовок</Label>
           <Input
             value={settings.seoTitle ?? ""}
             onChange={(e) => setSettings({ ...settings, seoTitle: e.target.value })}
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label>SEO description</Label>
+          <Label>SEO описание</Label>
           <Textarea
             value={settings.seoDescription ?? ""}
             onChange={(e) => setSettings({ ...settings, seoDescription: e.target.value })}
           />
         </div>
         <ImageUploadField
-          label="Open Graph image"
+          label="Open Graph изображение"
           value={settings.ogImageUrl}
           onChange={(url) => setSettings({ ...settings, ogImageUrl: url })}
         />
         <div className="flex flex-col gap-2">
-          <Label>Twitter handle</Label>
+          <Label>Twitter аккаунт</Label>
           <Input
             placeholder="@handle"
             value={settings.twitterHandle ?? ""}
@@ -88,7 +88,7 @@ export default function SeoPage() {
           {schemaError && <p className="text-xs text-red-400">{schemaError}</p>}
         </div>
         <Button type="submit" disabled={saving}>
-          {saving ? "Saving…" : "Save changes"}
+          {saving ? "Сохранение…" : "Сохранить изменения"}
         </Button>
       </form>
     </div>

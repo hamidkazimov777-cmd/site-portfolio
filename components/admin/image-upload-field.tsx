@@ -29,7 +29,7 @@ export function ImageUploadField({
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error ?? "Upload failed");
+        toast.error(data.error ?? "Не удалось загрузить");
         return;
       }
       onChange(data.url);
@@ -77,7 +77,7 @@ export function ImageUploadField({
             ) : (
               <Upload className="size-4" />
             )}
-            {value ? "Replace" : "Upload"}
+            {value ? "Заменить" : "Загрузить"}
           </Button>
           {value && (
             <Button
@@ -87,7 +87,7 @@ export function ImageUploadField({
               onClick={() => onChange(null)}
             >
               <X className="size-4" />
-              Remove
+              Удалить
             </Button>
           )}
         </div>

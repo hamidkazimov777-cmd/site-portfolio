@@ -11,19 +11,19 @@ export default async function DashboardPage() {
   ]);
 
   const stats = [
-    { label: "Projects", value: counts.projectCount, href: "/control/projects" },
-    { label: "Published", value: counts.publishedCount, href: "/control/projects" },
-    { label: "Skills", value: counts.skillCount, href: "/control/skills" },
-    { label: "Experience entries", value: counts.experienceCount, href: "/control/experience" },
-    { label: "Messages", value: counts.messageCount, href: "/control/messages" },
-    { label: "Unread messages", value: counts.unreadCount, href: "/control/messages" },
+    { label: "Проекты", value: counts.projectCount, href: "/control/projects" },
+    { label: "Опубликовано", value: counts.publishedCount, href: "/control/projects" },
+    { label: "Навыки", value: counts.skillCount, href: "/control/skills" },
+    { label: "Записи опыта", value: counts.experienceCount, href: "/control/experience" },
+    { label: "Сообщения", value: counts.messageCount, href: "/control/messages" },
+    { label: "Непрочитанные", value: counts.unreadCount, href: "/control/messages" },
   ];
 
   return (
     <div>
-      <h1 className="text-2xl font-medium text-foreground">Dashboard</h1>
+      <h1 className="text-2xl font-medium text-foreground">Дашборд</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Overview of your site content.
+        Обзор контента вашего сайта.
       </p>
 
       <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
@@ -42,10 +42,10 @@ export default async function DashboardPage() {
       </div>
 
       <div className="mt-10">
-        <h2 className="text-lg font-medium text-foreground">Recent messages</h2>
+        <h2 className="text-lg font-medium text-foreground">Последние сообщения</h2>
         <div className="mt-4 space-y-3">
           {recentMessages.length === 0 && (
-            <p className="text-sm text-muted-foreground">No messages yet.</p>
+            <p className="text-sm text-muted-foreground">Пока нет сообщений.</p>
           )}
           {recentMessages.map((message) => (
             <Card key={message.id}>

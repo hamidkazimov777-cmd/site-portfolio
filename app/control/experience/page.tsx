@@ -87,7 +87,7 @@ export default function ExperiencePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (res.ok) toast.success("Saved"); else toast.error("Failed to save");
+      if (res.ok) toast.success("Сохранено"); else toast.error("Не удалось сохранить");
     } else {
       const res = await fetch("/api/admin/experience", {
         method: "POST",
@@ -97,9 +97,9 @@ export default function ExperiencePage() {
       if (res.ok) {
         const created = await res.json();
         update(index, { id: created.id });
-        toast.success("Created");
+        toast.success("Создано");
       } else {
-        toast.error("Failed to create");
+        toast.error("Не удалось создать");
       }
     }
   }
@@ -110,7 +110,7 @@ export default function ExperiencePage() {
     if (item.id) {
       const res = await fetch(`/api/admin/experience/${item.id}`, { method: "DELETE" });
       if (!res.ok) {
-        toast.error("Failed to delete");
+        toast.error("Не удалось удалить");
         return;
       }
     }
@@ -121,14 +121,14 @@ export default function ExperiencePage() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-medium text-foreground">Experience</h1>
+          <h1 className="text-2xl font-medium text-foreground">Опыт</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage your career timeline.
+            Управление таймлайном карьеры.
           </p>
         </div>
         <Button onClick={addNew}>
           <Plus className="size-4" />
-          Add entry
+          Добавить запись
         </Button>
       </div>
 
@@ -138,15 +138,15 @@ export default function ExperiencePage() {
             <CardContent className="space-y-4 p-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-2">
-                  <Label>Role</Label>
+                  <Label>Должность</Label>
                   <Input value={item.role} onChange={(e) => update(index, { role: e.target.value })} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label>Company (optional)</Label>
+                  <Label>Компания (необязательно)</Label>
                   <Input value={item.company} onChange={(e) => update(index, { company: e.target.value })} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label>Start date</Label>
+                  <Label>Дата начала</Label>
                   <Input
                     type="date"
                     value={item.startDate}
@@ -154,7 +154,7 @@ export default function ExperiencePage() {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label>End date</Label>
+                  <Label>Дата окончания</Label>
                   <Input
                     type="date"
                     disabled={item.isCurrent}
@@ -169,11 +169,11 @@ export default function ExperiencePage() {
                   checked={item.isCurrent}
                   onCheckedChange={(checked) => update(index, { isCurrent: checked })}
                 />
-                <span className="text-sm text-muted-foreground">Current role</span>
+                <span className="text-sm text-muted-foreground">Текущая должность</span>
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label>Description</Label>
+                <Label>Описание</Label>
                 <Textarea
                   value={item.description}
                   onChange={(e) => update(index, { description: e.target.value })}
@@ -183,9 +183,9 @@ export default function ExperiencePage() {
               <div className="flex justify-between">
                 <Button variant="ghost" className="text-red-400" onClick={() => remove(index)}>
                   <Trash2 className="size-4" />
-                  Delete
+                  Удалить
                 </Button>
-                <Button onClick={() => save(index)}>Save</Button>
+                <Button onClick={() => save(index)}>Сохранить</Button>
               </div>
             </CardContent>
           </Card>
